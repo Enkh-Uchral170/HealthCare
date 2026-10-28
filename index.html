@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Эрүүл Мэндийн Эрсдэл</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}[hidden]{display:none!important}img{max-width:100%}
+/* Layout: sticky-free single column shell. View 1 = intro (hero + illustrated guide + warning). View 2 = calculator (form left, result right). Zones on every scale use one green / amber / red system, separate from the aqua accent. */
+:root{
+  --bg:#f1f8f8; --surface:#ffffff; --surface-2:#e8f4f4; --line:#d3e6e6;
+  --fg:#0d2b30; --muted:#587479; --accent:#0e9aa7; --accent-soft:#d9f0f2; --accent-fg:#ffffff;
+  --low:#12936b; --low-bg:#dcf4ea; --mid:#9a6200; --mid-bg:#fbefcf; --high:#c4352f; --high-bg:#fbe3e1;
+  --zg:#bfe9d9; --zw:#f6dfa0; --zr:#f3b8b3; --zn:#d3e6e6;
+  --shadow:0 1px 2px rgba(13,43,48,.05),0 8px 24px rgba(14,100,110,.07);
+  --font:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#08191c; --surface:#0f2529; --surface-2:#143036; --line:#1f3f45;
+  --fg:#e3f3f4; --muted:#8fb0b4; --accent:#3cc4d1; --accent-soft:#123a40; --accent-fg:#04191c;
+  --low:#4fd5a5; --low-bg:#10372c; --mid:#f0b94a; --mid-bg:#3a2d0f; --high:#ff7f78; --high-bg:#411b1a;
+  --zg:#1b5a48; --zw:#6b5214; --zr:#6e2d2a; --zn:#1f3f45;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#08191c; --surface:#0f2529; --surface-2:#143036; --line:#1f3f45;
+  --fg:#e3f3f4; --muted:#8fb0b4; --accent:#3cc4d1; --accent-soft:#123a40; --accent-fg:#04191c;
+  --low:#4fd5a5; --low-bg:#10372c; --mid:#f0b94a; --mid-bg:#3a2d0f; --high:#ff7f78; --high-bg:#411b1a;
+  --zg:#1b5a48; --zw:#6b5214; --zr:#6e2d2a; --zn:#1f3f45;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;
+  padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:var(--accent)}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--fg);font-weight:800;letter-spacing:-.01em;font-size:17px}
+.logo{width:40px;height:40px;border-radius:13px;background:var(--accent);display:grid;place-items:center;flex:none}
+.logo svg{width:22px;height:22px}
+.toggle{margin-left:auto;font:inherit;font-size:13px;font-weight:600;background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer}
+.toggle:focus-visible,.btn:focus-visible,.help:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;letter-spacing:-.02em;margin:0}
+.btn{font:inherit;font-weight:700;border-radius:12px;padding:13px 22px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn:disabled{opacity:.55;cursor:wait}
+.sec{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+
+/* ---------- intro ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:32px;align-items:center;margin-bottom:44px}
+.hero h1{font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.08}
+.hero p.lead{font-size:17px;color:var(--muted);margin:16px 0 24px;max-width:46ch}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero small{color:var(--muted);font-size:13px}
+.art{position:relative;max-width:420px;margin-inline:auto;width:100%}
+.art svg{display:block;width:100%;height:auto}
+.chip-f{position:absolute;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 12px;box-shadow:var(--shadow);font-size:12.5px;font-weight:700;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.chip-f i{width:9px;height:9px;border-radius:50%;background:var(--low)}
+.chip-f small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+.c1{left:-2%;top:12%} .c2{right:-2%;top:44%} .c3{left:6%;bottom:6%}
+.c2 i{background:var(--mid)}
+.block{margin-bottom:44px}
+.block>h2{font-size:clamp(22px,3vw,28px);font-weight:800;margin-bottom:6px}
+.block>p{color:var(--muted);margin:0 0 20px;max-width:62ch}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;counter-reset:s}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:6px}
+.step b{font-size:12px;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+.step h3{font-size:16px;font-weight:800}
+.step p{margin:0;color:var(--muted);font-size:14px}
+.guides{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.guide{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:10px;align-content:start}
+.ic{width:52px;height:52px;border-radius:15px;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent)}
+.ic svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.guide h3{font-size:15.5px;font-weight:800}
+.guide p{margin:0;font-size:13.5px;color:var(--muted)}
+.guide .n{font-size:12.5px;font-weight:700;color:var(--fg);background:var(--surface-2);border-radius:8px;padding:4px 8px;justify-self:start}
+.alert{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;background:var(--high-bg);color:var(--fg);border:1px solid var(--zr);border-radius:20px;padding:20px}
+.alert .ai{width:44px;height:44px;border-radius:13px;background:var(--high);display:grid;place-items:center}
+.alert .ai svg{width:24px;height:24px;stroke:var(--surface);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.alert h3{font-size:16px;font-weight:800;margin-bottom:6px;color:var(--high)}
+.alert ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.factors{display:flex;flex-wrap:wrap;gap:8px}
+.factors span{background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-size:13.5px;font-weight:600}
+.endcta{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:var(--accent);color:var(--accent-fg);border-radius:22px;padding:24px 28px}
+.endcta h2{font-size:clamp(20px,3vw,26px);font-weight:800}
+.endcta .btn{background:var(--surface);color:var(--fg);border-color:var(--surface)}
+@media(max-width:900px){.guides{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}.steps{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:480px){.guides{grid-template-columns:minmax(0,1fr)}.alert{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- calculator ---------- */
+.back{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;text-decoration:none;margin-bottom:14px;color:var(--muted)}
+.ph{margin-bottom:22px}
+.ph h1{font-size:clamp(22px,3.4vw,30px);font-weight:800}
+.ph p{margin:4px 0 0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:22px;min-width:0}
+.sec:not(:first-child){margin-top:26px}
+.field{padding:16px 0;border-bottom:1px solid var(--line)}
+.field:last-of-type{border-bottom:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.lw{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;min-width:0}
+.lw label,.lw .lab{font-weight:700}
+.hint{color:var(--muted);font-size:12.5px;font-weight:500}
+.help{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--accent);font:inherit;font-weight:800;font-size:12px;line-height:1;cursor:pointer;display:inline-grid;place-items:center;padding:0;align-self:center}
+.help[aria-expanded=true]{background:var(--accent);color:var(--accent-fg)}
+.helpbox{margin:10px 0 0;background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-size:13.5px;display:grid;gap:6px}
+.helpbox b{font-weight:800}
+.num{display:flex;align-items:baseline;gap:4px}
+.num input{width:78px;font:inherit;font-weight:700;font-size:16px;text-align:right;color:var(--fg);background:var(--surface-2);border:1px solid transparent;border-radius:10px;padding:4px 8px;font-variant-numeric:tabular-nums}
+.num input:focus{outline:2px solid var(--accent)}
+.num .u{color:var(--muted);font-size:12.5px;min-width:30px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;margin:8px 0 0;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:9px;border-radius:99px;background:var(--track,var(--zn))}
+input[type=range]::-moz-range-track{height:9px;border-radius:99px;background:var(--track,var(--zn))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--surface);border:4px solid var(--accent);margin-top:-6.5px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--surface);border:4px solid var(--accent)}
+input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+.scale{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.scale .mid{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
+.pill{display:inline-block;border-radius:99px;padding:2px 9px;font-size:11.5px;font-weight:800;font-style:normal;white-space:nowrap}
+.pill.g{background:var(--low-bg);color:var(--low)} .pill.w{background:var(--mid-bg);color:var(--mid)} .pill.r{background:var(--high-bg);color:var(--high)} .pill.n{background:var(--surface-2);color:var(--muted)}
+.nrm{font-weight:600}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:2px}
+.seg button{font:inherit;font-weight:600;font-size:14px;color:var(--muted);background:none;border:0;border-radius:9px;padding:7px 16px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(13,43,48,.18)}
+.bmicalc{margin-top:12px;background:var(--surface-2);border-radius:14px;padding:12px 14px;display:grid;gap:8px}
+.bmicalc .t{font-weight:700;font-size:13.5px}
+.bmicalc .in{display:flex;gap:12px;flex-wrap:wrap}
+.bmicalc label{display:grid;gap:3px;font-size:12.5px;color:var(--muted);font-weight:600}
+.bmicalc input{width:104px;font:inherit;font-weight:700;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.bmicalc input:focus{outline:2px solid var(--accent)}
+.bmicalc .o{font-size:13px;color:var(--muted)}
+.actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.actions .primary{flex:1;min-width:170px}
+.result{display:grid;gap:16px;min-width:0}
+.empty{display:grid;gap:10px;justify-items:start;color:var(--muted)}
+.empty svg{width:64px;height:64px}
+.empty h3{color:var(--fg);font-size:17px;font-weight:800}
+.empty p{margin:0}
+.stale{background:var(--mid-bg);color:var(--mid);border-radius:12px;padding:10px 14px;font-size:13.5px;font-weight:700}
+.risk{border-radius:20px;padding:22px;transition:background .3s,color .3s}
+.risk[data-level=Low]{background:var(--low-bg);color:var(--low)}
+.risk[data-level=Moderate]{background:var(--mid-bg);color:var(--mid)}
+.risk[data-level=High]{background:var(--high-bg);color:var(--high)}
+.risk .k{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.risk .big{font-size:clamp(34px,6vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:6px 0 2px}
+.risk .mn{font-weight:700;font-size:16px}
+.risk .sum{margin:12px 0 0;color:var(--fg);font-size:14.5px}
+.bars{display:grid;gap:12px}
+.bar .t{display:flex;justify-content:space-between;font-size:13.5px;font-weight:600;margin-bottom:5px}
+.bar .t b{font-variant-numeric:tabular-nums}
+.track{height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.fill{height:100%;border-radius:99px;width:0;transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.h3{font-size:15px;font-weight:800;margin:0 0 4px}
+.sub{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.cmps{display:grid;gap:18px}
+.ct{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:13.5px}
+.ct .cn{font-weight:700}
+.ct .cv{font-variant-numeric:tabular-nums;display:flex;gap:8px;align-items:center}
+.ctrack{position:relative;height:9px;border-radius:99px;background:var(--track,var(--zn));margin:12px 9px 6px}
+.ctrack i{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--surface);border:4px solid var(--fg);transform:translate(-50%,-50%);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.cs{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:4px}
+.tips{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.tips li{display:grid;grid-template-columns:10px minmax(0,1fr);gap:12px;font-size:14px}
+.tips i{width:10px;height:10px;border-radius:50%;margin-top:6px;background:var(--low)}
+.tips i.w{background:var(--mid)} .tips i.d{background:var(--high)}
+.dl{display:grid;gap:10px}
+.dl p{margin:0;font-size:13.5px;color:var(--muted)}
+.dl .msg{font-size:13px;font-weight:700;color:var(--low);min-height:1.2em}
+.note{font-size:12px;color:var(--muted);line-height:1.5;margin:0}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="#" aria-label="Нүүр хуудас">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-fg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg></span>
+      Эрсдэлийн үнэлгээ
+    </a>
+    <button class="toggle" id="themeBtn" type="button">Харанхуй</button>
+  </div>
+
+  <!-- ================= INTRO ================= -->
+  <main id="intro">
+    <section class="hero">
+      <div>
+        <p class="sec">Эрүүл мэндийн урьдчилсан шалгалт</p>
+        <h1>Эрсдэлээ эрт мэдвэл, эрүүл насаар амьдарна</h1>
+        <p class="lead">10 энгийн үзүүлэлтээ оруулахад машин сургалтын загвар таны эрүүл мэндийн эрсдэлийг Бага, Дунд, Өндөр гэж тооцоолж, хэвийн хэмжээтэй харьцуулан зөвлөмж өгнө.</p>
+        <div class="cta">
+          <a class="btn primary" href="#calc">Тооцоолох →</a>
+          <small>Ойролцоогоор 2 минут · бүртгэл шаардлагагүй</small>
+        </div>
+      </div>
+      <div class="art" aria-hidden="true">
+        <svg viewBox="0 0 360 320" fill="none">
+          <circle cx="180" cy="160" r="140" fill="var(--accent-soft)"/>
+          <circle cx="180" cy="160" r="102" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>
+          <path d="M180 238C98 184 82 132 118 104c27-21 52-7 62 14 10-21 35-35 62-14 36 28 20 80-62 134z" fill="var(--accent)"/>
+          <path d="M96 168h50l16-34 24 62 18-40 14 12h66" stroke="var(--surface)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M296 70v32M280 86h32" stroke="var(--accent)" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="62" cy="244" r="8" fill="var(--zg)"/><circle cx="318" cy="248" r="5" fill="var(--zw)"/><circle cx="52" cy="92" r="5" fill="var(--zr)"/>
+        </svg>
+        <div class="chip-f c1"><i></i><span>Даралт<small>118 / 76 мм.муб</small></span></div>
+        <div class="chip-f c2"><i></i><span>Глюкоз<small>104 мг/дл</small></span></div>
+        <div class="chip-f c3"><i></i><span>Эрсдэл<small>Бага · 82%</small></span></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Хэрхэн ажилладаг вэ</h2>
+      <p>Гурван алхамд үр дүн, тайлан гарна.</p>
+      <div class="steps">
+        <div class="step"><b>1-р алхам</b><h3>Мэдээллээ оруул</h3><p>Нас, даралт, глюкоз зэрэг 10 үзүүлэлтээ slider эсвэл тоогоор бөглөнө.</p></div>
+        <div class="step"><b>2-р алхам</b><h3>Тооцоолох товч дар</h3><p>300 модтой Random Forest загвар эрсдэлийн түвшин, магадлалыг гаргана.</p></div>
+        <div class="step"><b>3-р алхам</b><h3>Тайлан, зөвлөмж ав</h3><p>Хэвийнтэй харьцуулсан зураг, зөвлөмжийг үзэж, тайланг эмчид үзүүлэхээр татна.</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Үзүүлэлтээ хаанаас авах вэ</h2>
+      <p>Хэмжилтээ мэдэхгүй бол доорх зааврыг дага. Талбар бүрийн хажууд байгаа “?” тэмдэг дээр дарахад тайлбар гарна.</p>
+      <div class="guides">
+        <div class="guide"><div class="ic"><svg viewBox="0 0 48 48"><circle cx="24" cy="26" r="14"/><path d="M24 26l7-8M14 12l-3-3M34 12l3-3M24 8V5"/></svg></div><h3>Цусны даралт</h3><p>5 минут амарч, нуруугаа түшиж суугаад гараа зүрхний түвшинд тавьж хэмжинэ. Хоёр тооноос ДЭЭДЭХИЙГ (систолын) оруулна.</p><span class="n">120/80 → 120</span></div>
+        <div class="guide"><div class="ic"><svg viewBox="0 0 48 48"><path d="M24 6C24 6 10 22 10 31a14 14 0 0 0 28 0C38 22 24 6 24 6z"/><path d="M18 32a6 6 0 0 0 6 6"/></svg></div><h3>Цусан дах глюкоз</h3><p>8 цаг хоол идэхгүй өлөн байхад глюкометрээр эсвэл лабораторид хэмжүүлнэ. Нэгж нь мг/дл.</p><span class="n">5.5 ммоль/л ≈ 99 мг/дл</span></div>
+        <div class="guide"><div class="ic"><svg viewBox="0 0 48 48"><path d="M17 6h14M20 6v14L11 37a4 4 0 0 0 4 6h18a4 4 0 0 0 4-6l-9-17V6"/><path d="M16 32h16"/></svg></div><h3>Холестерин</h3><p>Липидийн шинжилгээнд “Total cholesterol” (нийт холестерин) гэсэн мөрийг оруулна. Нэгж нь мг/дл.</p><span class="n">5.2 ммоль/л ≈ 200 мг/дл</span></div>
+        <div class="guide"><div class="ic"><svg viewBox="0 0 48 48"><rect x="7" y="9" width="34" height="30" rx="8"/><path d="M15 22a12 10 0 0 1 18 0M24 28l5-6"/></svg></div><h3>Биеийн жингийн индекс</h3><p>Өндөр, жингээ бичихэд индекс автоматаар тооцогдоно. Мэддэг бол шууд оруулж болно.</p><span class="n">жин ÷ өндөр² (м)</span></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="alert" role="note">
+        <div class="ai" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18h.01"/></svg></div>
+        <div>
+          <h3>Анхааруулга</h3>
+          <ul>
+            <li>Энэ бол урьдчилсан тооцоо. Эмчийн үзлэг, оношийг орлохгүй.</li>
+            <li>Эмийн хэрэглээгээ үр дүнд тулгуурлан өөрөө өөрчилж болохгүй.</li>
+            <li>Цээж базлах, амьсгал давчдах, нэг талын мэдээ алдагдах, ярианы хямрал зэрэг шинж тэмдэг илэрвэл тооцоолол хийлгүй <b>103</b> руу яаралтай залгана.</li>
+            <li>Таны оруулсан мэдээлэл хаана ч илгээгдэхгүй, зөвхөн таны хөтөч дээр боловсруулагдана.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Загвар юуг харгалзан үздэг вэ</h2>
+      <p>Эрсдэлийг доорх 10 үзүүлэлтээр тооцоолно.</p>
+      <div class="factors"><span>Нас</span><span>Хүйс</span><span>Биеийн жингийн индекс</span><span>Систолын даралт</span><span>Глюкоз</span><span>Холестерин</span><span>Тамхи</span><span>Дасгал хөдөлгөөн</span><span>Нойр</span><span>Удамшил</span></div>
+    </section>
+
+    <section class="endcta">
+      <h2>Эрсдэлээ одоо шалгаж үз</h2>
+      <a class="btn" href="#calc">Тооцоолох →</a>
+    </section>
+  </main>
+
+  <!-- ================= CALCULATOR ================= -->
+  <main id="calc" hidden>
+    <a class="back" href="#">← Танилцуулга руу буцах</a>
+    <div class="ph"><h1>Эрүүл мэндийн үзүүлэлтээ оруул</h1><p>Бүх талбарыг бөглөөд “Тооцоолох” товч дарна. Ногоон хэсэг нь хэвийн хязгаар.</p></div>
+    <div class="grid">
+      <form class="panel" id="form" autocomplete="off">
+        <div id="fields"></div>
+        <div class="actions">
+          <button class="btn primary" id="go" type="submit" disabled>Модель ачаалж байна…</button>
+          <button class="btn" id="reset" type="button">Анхны утга</button>
+        </div>
+      </form>
+
+      <aside class="result" id="result" aria-live="polite">
+        <div class="panel empty" id="emptyState">
+          <svg viewBox="0 0 64 64" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="10" y="8" width="44" height="48" rx="10" fill="var(--accent-soft)"/><path d="M20 34h8l4-9 6 16 4-7h6"/></svg>
+          <h3>Үр дүн энд гарна</h3>
+          <p>Зүүн талын мэдээллээ шалгаад “Эрсдэлийг тооцоолох” товч дарна уу.</p>
+        </div>
+        <div id="out" hidden>
+          <div class="stale" id="stale" hidden>Мэдээлэл өөрчлөгдсөн. Шинэчлэхийн тулд “Эрсдэлийг тооцоолох” товч дахин дарна уу.</div>
+          <div class="risk" id="risk" data-level="Low">
+            <div class="k">Эрсдэлийн түвшин</div>
+            <div class="big" id="riskName"></div>
+            <div class="mn" id="riskMn"></div>
+            <p class="sum" id="riskSum"></p>
+          </div>
+          <div class="panel" style="margin-top:16px">
+            <p class="h3">Магадлалын задаргаа</p>
+            <p class="sub">Загварын 300 модны санал.</p>
+            <div class="bars" id="bars"></div>
+          </div>
+          <div class="panel" style="margin-top:16px">
+            <p class="h3">Хэвийн хэмжээтэй харьцуулалт</p>
+            <p class="sub">Хар цэг нь таны утга. Ногоон хэсэг хэвийн, шар анхаарах, улаан өндөр эсвэл эрсдэлтэй.</p>
+            <div class="cmps" id="cmps"></div>
+            <div class="legend"><span><i style="background:var(--zg)"></i>Хэвийн</span><span><i style="background:var(--zw)"></i>Анхаарах</span><span><i style="background:var(--zr)"></i>Өндөр</span></div>
+          </div>
+          <div class="panel" style="margin-top:16px">
+            <p class="h3">Зөвлөмж</p>
+            <ul class="tips" id="tips" style="margin-top:12px"></ul>
+          </div>
+          <div class="panel dl" style="margin-top:16px">
+            <p class="h3">Эмчид үзүүлэх тайлан</p>
+            <p>Үр дүн, хэвийнтэй харьцуулалт, зөвлөмжийг нэг хуудас тайлан болгон татна. Файлыг хөтөч дээр нээгээд хэвлэж эсвэл PDF-ээр хадгалж болно.</p>
+            <button class="btn primary" id="dlBtn" type="button">Тайлан татах</button>
+            <div class="msg" id="dlMsg" role="status"></div>
+          </div>
+        </div>
+        <p class="note">Энэ нь машин сургалтын загварын урьдчилсан тооцоо бөгөөд эмчийн оношийг орлохгүй. Эрүүл мэндийн асуудлаар эмчтэй зөвлөлдөнө үү.</p>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script>
+const KEYS=['Age','Gender','BMI','Systolic_BP','Glucose','Cholesterol','Smoking','Exercise_Days_Per_Week','Sleep_Hours','Family_History'];
+const LV={Low:{mn:'Бага эрсдэлтэй',c:'var(--low)',name:'Low'},Moderate:{mn:'Дунд эрсдэлтэй',c:'var(--mid)',name:'Medium'},High:{mn:'Өндөр эрсдэлтэй',c:'var(--high)',name:'High'}};
+const SUM={Low:'Одоогийн үзүүлэлтээр эрсдэл бага байна. Тогтмол үзлэг, эрүүл хэв маягаа үргэлжлүүлээрэй.',
+ Moderate:'Зарим үзүүлэлт анхаарал шаардаж байна. Доорх зөвлөмжийг дагаж, ойрын хугацаанд эмчийн үзлэгт хамрагдахыг зөвлөе.',
+ High:'Эрсдэл өндөр гарлаа. Удаан хүлээлгүй эмчид хандаж, дэлгэрэнгүй шинжилгээ хийлгэхийг зөвлөж байна.'};
+/* zones: [from,to,class,label]; g = normal, w = watch, r = high */
+const F={
+ Age:{min:18,max:90,step:1,val:45,unit:'нас',label:'Нас',en:'Age',help:'Одоогийн насаа бүтэн жилээр оруулна.'},
+ BMI:{min:14,max:45,step:0.1,val:25.6,unit:'кг/м²',label:'Биеийн жингийн индекс',en:'BMI',normal:'18.5–24.9',
+  help:'Биеийн жин өндрөөсөө тохирч байгаа эсэхийг харуулдаг тоо. Жинг (кг) өндрийн (метр) квадратад хуваана. Доорх тооцоололд өндөр, жингээ бичвэл автоматаар бөглөгдөнө.',
+  zones:[[14,18.5,'w','Дутуу'],[18.5,25,'g','Хэвийн'],[25,30,'w','Илүүдэл'],[30,45.01,'r','Таргалалт']]},
+ Systolic_BP:{min:80,max:220,step:1,val:125,unit:'мм.муб',label:'Систолын даралт',en:'Systolic BP',normal:'90–129',
+  help:'Даралт хэмжигч дээр хоёр тоо гардаг (жишээ нь 120/80). Систолын даралт нь тэдгээрийн ДЭЭДЭХ тоо, зүрх агших үед судсанд үүсэх даралт. “мм.муб” нь мөнгөн усны баганын миллиметр. 5 минут амарсны дараа хэмжинэ.',
+  zones:[[80,90,'w','Бага'],[90,130,'g','Хэвийн'],[130,140,'w','Өндөр хэвийн'],[140,220.01,'r','Өндөр']]},
+ Glucose:{min:60,max:300,step:1,val:100,unit:'мг/дл',label:'Цусан дах глюкоз',en:'Glucose',normal:'70–99',
+  help:'Цусан дахь сахарын хэмжээ. 8 цагаас дээш хоол идээгүй (өлөн) үеийн хариуг оруулна. Хариу ммоль/л-ээр гарсан бол 18-аар үржүүлж мг/дл болгоно (5.5 ммоль/л ≈ 99 мг/дл).',
+  zones:[[60,70,'w','Бага'],[70,100,'g','Хэвийн'],[100,126,'w','Анхаарах'],[126,300.01,'r','Өндөр']]},
+ Cholesterol:{min:100,max:350,step:1,val:190,unit:'мг/дл',label:'Холестерин',en:'Cholesterol',normal:'< 200',
+  help:'Цусан дахь нийт холестерин. Липидийн шинжилгээнд “Total cholesterol” гэж бичигддэг. Хариу ммоль/л-ээр гарсан бол 38.7-оор үржүүлж мг/дл болгоно (5.2 ммоль/л ≈ 200 мг/дл).',
+  zones:[[100,200,'g','Хэвийн'],[200,240,'w','Анхаарах'],[240,350.01,'r','Өндөр']]},
+ Exercise_Days_Per_Week:{min:0,max:7,step:1,val:3,unit:'өдөр/7хоног',label:'Дасгал хөдөлгөөн',en:'Exercise days',normal:'3–7',
+  help:'7 хоногийн хэдэн өдөр 30 минутаас дээш хөдөлгөөн (хурдан алхалт, гүйлт, дугуй, бие галзуу дасгал) хийдгийг оруулна.',
+  zones:[[0,3,'w','Бага'],[3,7.01,'g','Хэвийн']]},
+ Sleep_Hours:{min:3,max:12,step:0.5,val:7,unit:'цаг',label:'Нойр',en:'Sleep hours',normal:'7–9',
+  help:'Нэг өдөр өдрийн дунджаар хэдэн цаг унтдагаа оруулна. Насанд хүрэгчдэд 7–9 цаг тохиромжтой.',
+  zones:[[3,7,'w','Бага'],[7,9.01,'g','Хэвийн'],[9.01,12.01,'w','Хэт их']]}
+};
+const SEG={
+ Gender:{label:'Хүйс',en:'Gender',opts:['Эмэгтэй','Эрэгтэй'],help:'Загвар хүйсийг 0 (эмэгтэй), 1 (эрэгтэй) гэж ойлгоно.'},
+ Smoking:{label:'Тамхи татдаг эсэх',en:'Smoking',opts:['Үгүй','Тийм'],help:'Одоо тамхи татдаг бол “Тийм” гэж сонгоно.'},
+ Family_History:{label:'Удамд өвчтэй эсэх',en:'Family History',opts:['Үгүй','Тийм'],help:'Эцэг эх, ах эгч нарын хэн нэгэнд зүрх судас, даралт ихсэлт, чихрийн шижин зэрэг өвчин оношлогдсон бол “Тийм” гэж сонгоно.'}
+};
+const ORDER=[['sec','Үндсэн мэдээлэл'],'Gender','Age','BMI',['sec','Эмнэлзүйн үзүүлэлт'],'Systolic_BP','Glucose','Cholesterol',['sec','Амьдралын хэв маяг'],'Smoking','Exercise_Days_Per_Week','Sleep_Hours','Family_History'];
+const DEF_H=170,DEF_W=74;
+const state={},defaults={};
+let M=null,last=null;
+const $=id=>document.getElementById(id);
+
+/* ---------- helpers ---------- */
+const CV={g:'var(--zg)',w:'var(--zw)',r:'var(--zr)'};
+const pct=(k,v)=>Math.min(100,Math.max(0,(v-F[k].min)/(F[k].max-F[k].min)*100));
+function trackCSS(k){
+  const f=F[k];if(!f.zones)return 'var(--zn)';
+  const s=f.zones.map(([a,b,c])=>`${CV[c]} ${pct(k,a).toFixed(2)}% ${pct(k,b).toFixed(2)}%`);
+  return `linear-gradient(to right,${s.join(',')})`;
+}
+function zoneOf(k,v){const f=F[k];if(!f.zones)return null;return f.zones.find(z=>v>=z[0]&&v<z[1])||f.zones[f.zones.length-1]}
+const pill=z=>z?`<em class="pill ${z[2]}">${z[3]}</em>`:'';
+const fmt=(k,v)=>F[k].step<1?Number(v).toFixed(1):String(v);
+
+/* ---------- build form ---------- */
+function helpBtn(k,label,text){
+  return `<button type="button" class="help" aria-expanded="false" aria-controls="h-${k}" aria-label="Тайлбар: ${label}" data-help="${k}">?</button>`;
+}
+function build(){
+  let html='';
+  for(const it of ORDER){
+    if(Array.isArray(it)){html+=`<p class="sec">${it[1]}</p>`;continue}
+    const k=it;
+    if(SEG[k]){
+      const s=SEG[k];state[k]=defaults[k]=0;
+      html+=`<div class="field"><div class="row"><div class="lw"><span class="lab">${s.label}</span><span class="hint">${s.en}</span>${helpBtn(k,s.label)}</div>
+      <div class="seg" id="seg-${k}" role="group" aria-label="${s.label}"><button type="button" data-v="0" aria-pressed="true">${s.opts[0]}</button><button type="button" data-v="1" aria-pressed="false">${s.opts[1]}</button></div></div>
+      <div class="helpbox" id="h-${k}" hidden>${s.help}</div></div>`;
+    }else{
+      const f=F[k];state[k]=defaults[k]=f.val;
+      html+=`<div class="field" data-key="${k}"><div class="row"><div class="lw"><label for="n-${k}">${f.label}</label><span class="hint">${f.en}</span>${helpBtn(k,f.label)}</div>
+      <div class="num"><input id="n-${k}" type="number" inputmode="decimal" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.val}"><span class="u">${f.unit}</span></div></div>
+      <div class="helpbox" id="h-${k}" hidden>${f.help}</div>
+      ${k==='BMI'?`<div class="bmicalc"><span class="t">БЖИ-г өндөр, жингээс автоматаар тооцох</span><div class="in">
+        <label>Өндөр (см)<input id="bh" type="number" inputmode="decimal" min="100" max="230" value="${DEF_H}"></label>
+        <label>Жин (кг)<input id="bw" type="number" inputmode="decimal" min="30" max="250" value="${DEF_W}"></label></div><span class="o" id="bo"></span></div>`:''}
+      <input id="r-${k}" type="range" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.val}" aria-label="${f.label}" style="--track:${trackCSS(k)}">
+      <div class="scale"><span>${f.min}</span><span class="mid">${f.normal?`<span class="nrm">Хэвийн: ${f.normal}</span>`:''}<span id="st-${k}"></span></span><span>${f.max}</span></div></div>`;
+    }
+  }
+  $('fields').innerHTML=html;
+  for(const k of Object.keys(F)){
+    const n=$('n-'+k),r=$('r-'+k);
+    const set=(v,fromNum)=>{v=parseFloat(v);if(isNaN(v))return;v=Math.min(F[k].max,Math.max(F[k].min,v));state[k]=v;r.value=v;if(!fromNum)n.value=fmt(k,v);stat(k);touch();if(k==='BMI'&&!fromNum)syncBO()};
+    r.addEventListener('input',()=>set(r.value));
+    n.addEventListener('input',()=>set(n.value,true));
+    n.addEventListener('blur',()=>{n.value=fmt(k,state[k])});
+    stat(k);
+  }
+  for(const k of Object.keys(SEG)){
+    $('seg-'+k).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;state[k]=+b.dataset.v;syncSeg(k);touch()});
+  }
+  $('fields').addEventListener('click',e=>{
+    const b=e.target.closest('.help');if(!b)return;
+    const box=$('h-'+b.dataset.help),open=b.getAttribute('aria-expanded')==='true';
+    b.setAttribute('aria-expanded',String(!open));box.hidden=open;
+  });
+  const bh=$('bh'),bw=$('bw');
+  const calc=()=>{
+    const h=parseFloat(bh.value),w=parseFloat(bw.value);
+    if(!(h>=100&&h<=230&&w>=30&&w<=250)){$('bo').textContent='Өндөр 100–230 см, жин 30–250 кг хооронд байна.';return}
+    let b=Math.round(w/((h/100)**2)*10)/10;const c=Math.min(F.BMI.max,Math.max(F.BMI.min,b));
+    state.BMI=c;$('n-BMI').value=fmt('BMI',c);$('r-BMI').value=c;stat('BMI');syncBO(b);touch();
+  };
+  bh.addEventListener('input',calc);bw.addEventListener('input',calc);
+  syncBO();
+}
+function syncBO(b){
+  const h=parseFloat($('bh').value),w=parseFloat($('bw').value);
+  if(b==null){b=(h>=100&&w>=30)?Math.round(w/((h/100)**2)*10)/10:null}
+  const z=zoneOf('BMI',state.BMI);
+  $('bo').innerHTML=b!=null&&Math.abs(b-state.BMI)<0.06?`Тооцоолсон БЖИ: <b>${b}</b> ${pill(z)}`:`БЖИ-г гараар оруулсан. Өндөр, жинг өөрчилбөл дахин тооцогдоно.`;
+}
+function stat(k){const e=$('st-'+k);if(e)e.innerHTML=pill(zoneOf(k,state[k]))}
+function syncSeg(k){document.querySelectorAll('#seg-'+k+' button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.v===state[k])))}
+function touch(){if(last)$('stale').hidden=false}
+
+/* ---------- model ---------- */
+function predict(x){
+  const {roots,f,t,l,r,v,classes}=M,p=[0,0,0],xs=KEYS.map(k=>Math.fround(x[k]));
+  for(const root of roots){let n=root;while(f[n]>=0)n=xs[f[n]]<=t[n]?l[n]:r[n];const lv=v[r[n]];p[0]+=lv[0];p[1]+=lv[1];p[2]+=lv[2]}
+  const out={};classes.forEach((c,i)=>out[c]=p[i]/roots.length);return out;
+}
+function advice(s){
+  const a=[],add=(cls,h,txt)=>a.push({cls,h,txt});
+  if(s.BMI>=30)add('d','Жин',`БЖИ ${s.BMI} нь таргалалтын түвшинд байна. Хоолны дэглэм, хөдөлгөөнөө эмчтэй зөвлөлдөж төлөвлөөрэй.`);
+  else if(s.BMI>=25)add('w','Жин',`БЖИ ${s.BMI} нь жингийн илүүдэлтэй байна. 5–7% жин хасахад зүрх, судасны эрсдэл мэдэгдэхүйц буурдаг.`);
+  else if(s.BMI<18.5)add('w','Жин',`БЖИ ${s.BMI} нь жингийн дутагдалтай байна. Хоол тэжээлийн зөвлөгөө авах нь зүйтэй.`);
+  if(s.Systolic_BP>=140)add('d','Цусны даралт',`Систолын даралт ${s.Systolic_BP} өндөр байна. Давс бага хэрэглэж, эмчид үзүүлж даралтаа давтан хэмжүүлээрэй.`);
+  else if(s.Systolic_BP>=130)add('w','Цусны даралт',`Систолын даралт ${s.Systolic_BP} хэвийнээс арай өндөр байна. Давс, кофейнээ багасгаж, тогтмол хэмжиж байгаарай.`);
+  if(s.Glucose>=126)add('d','Глюкоз',`Глюкоз ${s.Glucose} мг/дл өндөр байна. Чихрийн шижингийн шинжилгээнд хамрагдахыг зөвлөж байна.`);
+  else if(s.Glucose>=100)add('w','Глюкоз',`Глюкоз ${s.Glucose} мг/дл хэвийн дээд хязгаарт ойр байна. Чихэрлэг хүнс, ундаагаа багасгаарай.`);
+  if(s.Cholesterol>=240)add('d','Холестерин',`Холестерин ${s.Cholesterol} мг/дл өндөр байна. Ханасан өөх тос багатай хоол идэж, липидийн шинжилгээ хийлгээрэй.`);
+  else if(s.Cholesterol>=200)add('w','Холестерин',`Холестерин ${s.Cholesterol} мг/дл хэвийн хэмжээнээс бага зэрэг дээгүүр байна.`);
+  if(s.Smoking)add('d','Тамхи','Тамхи татахаа зогсоох нь эрсдэлийг бууруулах хамгийн үр дүнтэй алхам. Тамхинаас гарахад туслах үйлчилгээг эмнэлгээс авах боломжтой.');
+  if(s.Exercise_Days_Per_Week<3)add('w','Хөдөлгөөн',`7 хоногт ${s.Exercise_Days_Per_Week} өдөр хөдөлгөөн хийж байна. Долоо хоногт 150 минут дунд зэргийн дасгал хийхийг зорь.`);
+  if(s.Sleep_Hours<7)add('w','Нойр',`${s.Sleep_Hours} цаг нойр бага байна. Насанд хүрэгчид 7–9 цаг унтах нь тохиромжтой.`);
+  else if(s.Sleep_Hours>9)add('w','Нойр',`${s.Sleep_Hours} цаг нойр хэт их байна. Нойрны хэм, чанараа шалгаарай.`);
+  if(s.Family_History)add('w','Удам','Удамд өвчтэй тул эрүүл мэндийн үзлэг, шинжилгээнд жилд нэг удаа тогтмол хамрагдаарай.');
+  if(!a.length)add('','Сайн байна','Таны үзүүлэлтүүд эрүүл хэмжээнд байна. Одоогийн хэв маягаа хадгалаарай.');
+  return a;
+}
+const CMP=['BMI','Systolic_BP','Glucose','Cholesterol','Exercise_Days_Per_Week','Sleep_Hours'];
+
+function compute(){
+  if(!M)return;
+  const s={...state},p=predict(s);
+  const level=Object.keys(p).reduce((a,b)=>p[a]>=p[b]?a:b);
+  last={s,p,level,tips:advice(s)};
+  $('emptyState').hidden=true;$('out').hidden=false;$('stale').hidden=true;
+  $('risk').dataset.level=level;
+  $('riskName').textContent=LV[level].name;
+  $('riskMn').textContent=LV[level].mn+' · '+Math.round(p[level]*100)+'%';
+  $('riskSum').textContent=SUM[level];
+  const names={Low:'Low · Бага',Moderate:'Medium · Дунд',High:'High · Өндөр'};
+  $('bars').innerHTML=['Low','Moderate','High'].map(c=>`<div class="bar"><div class="t"><span>${names[c]}</span><b>${(p[c]*100).toFixed(1)}%</b></div><div class="track"><div class="fill" style="width:${(p[c]*100).toFixed(1)}%;background:${LV[c].c}"></div></div></div>`).join('');
+  $('cmps').innerHTML=CMP.map(k=>{const f=F[k],v=s[k],z=zoneOf(k,v);
+    return `<div><div class="ct"><span class="cn">${f.label}</span><span class="cv"><b>${fmt(k,v)}</b> ${f.unit} ${pill(z)}</span></div>
+    <div class="ctrack" style="--track:${trackCSS(k)}"><i style="left:${pct(k,v).toFixed(1)}%"></i></div>
+    <div class="cs"><span>${f.min}</span><span>Хэвийн: ${f.normal} ${f.unit}</span><span>${f.max}</span></div></div>`}).join('');
+  $('tips').innerHTML=last.tips.map(t=>`<li><i class="${t.cls}"></i><span><b>${t.h}.</b> ${t.txt}</span></li>`).join('');
+  $('dlMsg').textContent='';
+  if(matchMedia('(max-width:860px)').matches)$('risk').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ---------- report for the doctor ---------- */
+function reportHTML(){
+  const {s,p,level,tips}=last,d=new Date(),ds=d.toISOString().slice(0,10);
+  const yn=v=>v?'Тийм':'Үгүй',cls={g:'#12936b',w:'#9a6200',r:'#c4352f'};
+  const rows=[
+   ['Нас',s.Age+' нас','—','—'],['Хүйс',s.Gender?'Эрэгтэй':'Эмэгтэй','—','—'],
+   ...CMP.map(k=>{const f=F[k],z=zoneOf(k,s[k]);return [f.label,fmt(k,s[k])+' '+f.unit,f.normal+' '+f.unit,z?`<b style="color:${cls[z[2]]}">${z[3]}</b>`:'—']}),
+   ['Тамхи татах',yn(s.Smoking),'Үгүй',s.Smoking?'<b style="color:#c4352f">Эрсдэлтэй</b>':'<b style="color:#12936b">Хэвийн</b>'],
+   ['Удамшил',yn(s.Family_History),'Үгүй',s.Family_History?'<b style="color:#9a6200">Анхаарах</b>':'<b style="color:#12936b">Хэвийн</b>']];
+  const rc={Low:'#12936b',Moderate:'#9a6200',High:'#c4352f'}[level];
+  return `<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Эрүүл мэндийн эрсдэлийн тайлан ${ds}</title>
+<style>body{font-family:'Segoe UI',Arial,sans-serif;color:#0d2b30;max-width:760px;margin:32px auto;padding:0 20px;line-height:1.5}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:#0e7f8a;margin:28px 0 8px}
+.m{color:#587479;font-size:13px}.risk{border:2px solid ${rc};border-radius:14px;padding:16px 20px;margin-top:18px}.risk b{font-size:30px;color:${rc}}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #d3e6e6}th{background:#e8f4f4;font-size:12.5px}
+li{margin:5px 0;font-size:14px}.foot{margin-top:30px;font-size:12px;color:#587479;border-top:1px solid #d3e6e6;padding-top:12px}</style></head><body>
+<h1>Эрүүл мэндийн эрсдэлийн тайлан</h1><div class="m">Огноо: ${ds} · Random Forest загвар (300 мод)</div>
+<div class="risk"><div class="m">Эрсдэлийн түвшин</div><b>${LV[level].name}</b> · ${LV[level].mn} (${Math.round(p[level]*100)}%)
+<div class="m" style="margin-top:6px">Магадлал: Low ${(p.Low*100).toFixed(1)}% · Medium ${(p.Moderate*100).toFixed(1)}% · High ${(p.High*100).toFixed(1)}%</div></div>
+<h2>Оруулсан үзүүлэлт ба хэвийн хэмжээ</h2>
+<table><tr><th>Үзүүлэлт</th><th>Утга</th><th>Хэвийн хязгаар</th><th>Дүгнэлт</th></tr>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</table>
+<h2>Зөвлөмж</h2><ul>${tips.map(t=>`<li><b>${t.h}.</b> ${t.txt}</li>`).join('')}</ul>
+<div class="foot">Энэ тайлан нь машин сургалтын загварын урьдчилсан тооцоо бөгөөд эмчийн оношийг орлохгүй. Глюкоз, холестерин мг/дл нэгжээр, даралт мм.муб-аар. Хүйсийг 0 = эмэгтэй, 1 = эрэгтэй гэж кодолсон.</div></body></html>`;
+}
+let dlCap,dlReady=false;
+async function initDL(){try{dlCap=await claude.use('downloads')}catch(e){dlCap=null}dlReady=true}
+$('dlBtn').addEventListener('click',async()=>{
+  if(!last)return;const html=reportHTML(),m=$('dlMsg');m.style.color='var(--low)';
+  if(dlCap){
+    try{await dlCap.save({filename:`erguuliin-ersdel-tailan-${new Date().toISOString().slice(0,10)}.html`,data:html});m.textContent='Тайлан хадгалагдлаа. Файлыг хөтөч дээр нээж, хэвлэх эсвэл PDF болгоно уу.'}
+    catch(e){m.style.color='var(--muted)';m.textContent=e&&e.code==='declined'?'Хадгалахаас татгалзсан.':'Файл татаж чадсангүй. Дахин оролдоно уу.'}
+  }else{
+    try{
+      const blob=new Blob([html],{type:'text/html;charset=utf-8'}),u=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=u;a.download=`erguuliin-ersdel-tailan-${new Date().toISOString().slice(0,10)}.html`;document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(u),2000);m.textContent='Тайлан татагдлаа. Файлыг хөтөч дээр нээж, хэвлэх эсвэл PDF болгоно уу.';
+    }catch(e){m.style.color='var(--muted)';m.textContent='Файл татаж чадсангүй. Дахин оролдоно уу.'}
+  }
+});
+
+/* ---------- wiring ---------- */
+$('form').addEventListener('submit',e=>{e.preventDefault();compute()});
+$('reset').addEventListener('click',()=>{
+  Object.assign(state,defaults);
+  for(const k of Object.keys(F)){$('n-'+k).value=fmt(k,state[k]);$('r-'+k).value=state[k];stat(k)}
+  Object.keys(SEG).forEach(syncSeg);$('bh').value=DEF_H;$('bw').value=DEF_W;syncBO();touch();
+});
+function route(){
+  const calc=location.hash==='#calc';
+  $('intro').hidden=calc;$('calc').hidden=!calc;window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+build();route();initDL();
+fetch('model.json').then(r=>r.json()).then(j=>{
+  M={classes:j.classes,roots:Int32Array.from(j.roots),f:Int8Array.from(j.f),t:Float64Array.from(j.t),l:Int32Array.from(j.l),r:Int32Array.from(j.r),v:j.v};
+  const b=$('go');b.disabled=false;b.textContent='Эрсдэлийг тооцоолох';
+}).catch(()=>{$('go').textContent='Модель ачаалж чадсангүй'});
+
+let dark=matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme(){document.documentElement.dataset.theme=dark?'dark':'light';$('themeBtn').textContent=dark?'Гэрэлтэй':'Харанхуй'}
+$('themeBtn').addEventListener('click',()=>{dark=!dark;applyTheme()});applyTheme();
+</script>
+</body>
+</html>
